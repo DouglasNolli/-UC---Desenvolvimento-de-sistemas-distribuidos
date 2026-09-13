@@ -1,0 +1,20 @@
+{
+  "name": "pedidos-api",
+  "version": "1.0.0",
+  "description": "API 2 - Pedidos. Consome de forma sincrona a API de Produtos via HTTP/REST.",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "sistemas-distribuidos",
+    "rest",
+    "http"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

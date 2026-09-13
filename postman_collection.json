@@ -1,0 +1,169 @@
+{
+  "info": {
+    "name": "Sistemas Distribuidos - Produtos e Pedidos",
+    "description": "Comunicacao sincrona entre APIs REST.\n\nAPI 1 - Produtos: Java + Spring Boot em http://localhost:8080\nAPI 2 - Pedidos: Node.js + Express em http://localhost:8081",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "produtos", "value": "http://localhost:8080" },
+    { "key": "pedidos", "value": "http://localhost:8081" }
+  ],
+  "item": [
+    {
+      "name": "API 1 - Produtos (porta 8080)",
+      "item": [
+        {
+          "name": "Listar produtos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{produtos}}/produtos", "host": ["{{produtos}}"], "path": ["produtos"] }
+          }
+        },
+        {
+          "name": "Consultar produto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{produtos}}/produtos/1", "host": ["{{produtos}}"], "path": ["produtos", "1"] }
+          }
+        },
+        {
+          "name": "Consultar estoque",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{produtos}}/produtos/1/estoque", "host": ["{{produtos}}"], "path": ["produtos", "1", "estoque"] }
+          }
+        },
+        {
+          "name": "Produto inexistente (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{produtos}}/produtos/999", "host": ["{{produtos}}"], "path": ["produtos", "999"] }
+          }
+        },
+        {
+          "name": "Cadastrar produto (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Headset\",\n  \"preco\": 199.90,\n  \"estoque\": 8\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{produtos}}/produtos", "host": ["{{produtos}}"], "path": ["produtos"] }
+          }
+        },
+        {
+          "name": "Cadastro invalido (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"\",\n  \"preco\": -10\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{produtos}}/produtos", "host": ["{{produtos}}"], "path": ["produtos"] }
+          }
+        },
+        {
+          "name": "Dar baixa no estoque (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantidade\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{produtos}}/produtos/1/estoque", "host": ["{{produtos}}"], "path": ["produtos", "1", "estoque"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "API 2 - Pedidos (porta 8081)",
+      "item": [
+        {
+          "name": "Cenario 1 - Pedido com sucesso (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Douglas\",\n  \"produtoId\": 1,\n  \"quantidade\": 2\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{pedidos}}/pedidos", "host": ["{{pedidos}}"], "path": ["pedidos"] },
+            "description": "Depois, rode 'Consultar produto' na API 1: o estoque diminuiu."
+          }
+        },
+        {
+          "name": "Cenario 2 - Estoque insuficiente (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Douglas\",\n  \"produtoId\": 3,\n  \"quantidade\": 99\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{pedidos}}/pedidos", "host": ["{{pedidos}}"], "path": ["pedidos"] }
+          }
+        },
+        {
+          "name": "Cenario 3 - Produto inexistente (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Douglas\",\n  \"produtoId\": 999,\n  \"quantidade\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{pedidos}}/pedidos", "host": ["{{pedidos}}"], "path": ["pedidos"] }
+          }
+        },
+        {
+          "name": "Cenario 4 - Dados invalidos (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{pedidos}}/pedidos", "host": ["{{pedidos}}"], "path": ["pedidos"] }
+          }
+        },
+        {
+          "name": "Cenario 5 - API de Produtos desligada (503)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cliente\": \"Douglas\",\n  \"produtoId\": 1,\n  \"quantidade\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{pedidos}}/pedidos", "host": ["{{pedidos}}"], "path": ["pedidos"] },
+            "description": "DESLIGUE a API de Produtos (Ctrl+C) antes de enviar."
+          }
+        },
+        {
+          "name": "Listar pedidos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{pedidos}}/pedidos", "host": ["{{pedidos}}"], "path": ["pedidos"] }
+          }
+        }
+      ]
+    }
+  ]
+}

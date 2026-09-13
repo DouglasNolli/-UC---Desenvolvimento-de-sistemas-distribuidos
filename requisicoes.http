@@ -1,0 +1,104 @@
+### Requisicoes para a extensao REST Client do VS Code.
+### Clique em "Send Request" acima de cada bloco.
+
+@produtos = http://localhost:8080
+@pedidos = http://localhost:8081
+
+###############################################
+# API 1 - PRODUTOS (porta 8080)
+###############################################
+
+### Listar produtos
+GET {{produtos}}/produtos
+
+### Consultar produto
+GET {{produtos}}/produtos/1
+
+### Consultar estoque
+GET {{produtos}}/produtos/1/estoque
+
+### Produto inexistente -> 404
+GET {{produtos}}/produtos/999
+
+### Cadastrar produto -> 201
+POST {{produtos}}/produtos
+Content-Type: application/json
+
+{
+  "nome": "Headset",
+  "preco": 199.90,
+  "estoque": 8
+}
+
+### Cadastro invalido -> 400
+POST {{produtos}}/produtos
+Content-Type: application/json
+
+{
+  "nome": "",
+  "preco": -10
+}
+
+### Dar baixa no estoque -> 200
+PATCH {{produtos}}/produtos/1/estoque
+Content-Type: application/json
+
+{ "quantidade": 2 }
+
+###############################################
+# API 2 - PEDIDOS (porta 8081)
+###############################################
+
+### Cenario 1 - Pedido com sucesso -> 201
+POST {{pedidos}}/pedidos
+Content-Type: application/json
+
+{
+  "cliente": "Douglas",
+  "produtoId": 1,
+  "quantidade": 2
+}
+
+### Confira que o estoque do produto 1 diminuiu
+GET {{produtos}}/produtos/1
+
+### Cenario 2 - Estoque insuficiente -> 409
+POST {{pedidos}}/pedidos
+Content-Type: application/json
+
+{
+  "cliente": "Douglas",
+  "produtoId": 3,
+  "quantidade": 99
+}
+
+### Cenario 3 - Produto inexistente -> 404
+POST {{pedidos}}/pedidos
+Content-Type: application/json
+
+{
+  "cliente": "Douglas",
+  "produtoId": 999,
+  "quantidade": 1
+}
+
+### Cenario 4 - Dados invalidos -> 400
+POST {{pedidos}}/pedidos
+Content-Type: application/json
+
+{
+  "cliente": ""
+}
+
+### Cenario 5 - DESLIGUE a API de Produtos antes de enviar -> 503
+POST {{pedidos}}/pedidos
+Content-Type: application/json
+
+{
+  "cliente": "Douglas",
+  "produtoId": 1,
+  "quantidade": 1
+}
+
+### Listar pedidos
+GET {{pedidos}}/pedidos
